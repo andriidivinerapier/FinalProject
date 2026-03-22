@@ -2,4 +2,5 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-</resources>
+
+    <color name="bg_dark">#222834</color> <color name="input_dark">#2C3545</color> <color name="orange_primary">#FF7A45</color> <color name="text_hint">#8A94A6</color> </resources>

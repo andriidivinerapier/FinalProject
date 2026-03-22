@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Смачно :)"
+            android:textColor="@color/white"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ВХІД"
+                android:textColor="@color/text_hint"
+                android:textSize="14sp"
+                android:layout_marginEnd="24dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="РЕЄСТРАЦІЯ"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/input_dark"
+            android:layout_marginBottom="24dp"/>
+
+        <EditText android:id="@+id/etName" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:hint="Ваше ім'я" android:textColorHint="@color/text_hint" android:textColor="@color/white" android:paddingStart="16dp" android:layout_marginBottom="12dp"/>
+
+        <EditText android:id="@+id/etSurname" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:hint="Прізвище" android:textColorHint="@color/text_hint" android:textColor="@color/white" android:paddingStart="16dp" android:layout_marginBottom="12dp"/>
+
+        <TextView android:id="@+id/tvDob" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:text="Дата народження" android:textColor="@color/text_hint" android:gravity="center_vertical" android:paddingStart="16dp" android:layout_marginBottom="12dp"/>
+
+        <EditText android:id="@+id/etEmail" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:hint="your@email.com" android:inputType="textEmailAddress" android:textColorHint="@color/text_hint" android:textColor="@color/white" android:paddingStart="16dp" android:layout_marginBottom="12dp"/>
+
+        <EditText android:id="@+id/etLogin" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:hint="Придумайте логін" android:textColorHint="@color/text_hint" android:textColor="@color/white" android:paddingStart="16dp" android:layout_marginBottom="12dp"/>
+
+        <EditText android:id="@+id/etPassword" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:hint="Пароль" android:inputType="textPassword" android:textColorHint="@color/text_hint" android:textColor="@color/white" android:paddingStart="16dp" android:layout_marginBottom="12dp"/>
+
+        <EditText android:id="@+id/etRepeatPassword" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/bg_input" android:hint="Підтвердження паролю" android:inputType="textPassword" android:textColorHint="@color/text_hint" android:textColor="@color/white" android:paddingStart="16dp" android:layout_marginBottom="24dp"/>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:background="@drawable/bg_button"
+            android:text="ЗАРЕЄСТРУВАТИСЯ"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"/>
+
+    </LinearLayout>
+</ScrollView>
