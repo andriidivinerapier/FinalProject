@@ -43,7 +43,7 @@ class GuideActivity : AppCompatActivity() {
     private fun generateDummyData() {
         // Тестова база на 14 рецептів (щоб було що пагінувати)
         allRecipes = listOf(
-            RecipeItem(1, "Піца Маргарита чотка", "Піца", 25),
+            RecipeItem(1, "Піца Маргарита", "Піца", 25),
             RecipeItem(2, "Бургер По-Багатому", "Стріт Фуд", 15),
             RecipeItem(3, "Суп з лобстерами (мрія)", "Супи", 40),
             RecipeItem(4, "Паста Карбонара класична", "Паста", 20),
