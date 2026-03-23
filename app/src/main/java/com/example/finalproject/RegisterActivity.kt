@@ -23,13 +23,22 @@ class RegisterActivity : AppCompatActivity() {
         val etPassword = findViewById<EditText>(R.id.etPassword)
         val etRepeatPassword = findViewById<EditText>(R.id.etRepeatPassword)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
-
+        val tvGoToLogin = findViewById<TextView>(R.id.tvGoToLogin)
+        tvGoToLogin.setOnClickListener {
+            finish()
+        }
         // Календар для дати народження
         tvDob.setOnClickListener {
             val calendar = Calendar.getInstance()
-            val dpd = DatePickerDialog(this, { _, year, month, day ->
-                tvDob.text = "$day/${month + 1}/$year"
-            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
+            val dpd = DatePickerDialog(
+                this,
+                { _, year, month, day ->
+                    tvDob.text = "$day/${month + 1}/$year"
+                },
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)
+            )
             dpd.show()
         }
 
@@ -43,8 +52,8 @@ class RegisterActivity : AppCompatActivity() {
             val password = etPassword.text.toString().trim()
             val repeatPassword = etRepeatPassword.text.toString().trim()
 
-            // Перевірки (Валідація)
-            if (name.isEmpty() || surname.isEmpty() || dob == "Дата народження" || email.isEmpty() || login.isEmpty() || password.isEmpty() || repeatPassword.isEmpty()) {
+            // Базова перевірка
+            if (name.isEmpty() || surname.isEmpty() || email.isEmpty() || login.isEmpty() || password.isEmpty() || repeatPassword.isEmpty()) {
                 Toast.makeText(this, "Заповніть усі поля!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -61,20 +70,33 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Збереження даних
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+
+            // 1. ПЕРЕВІРКА: ЧИ Є ВЖЕ ТАКИЙ ЛОГІН АБО ПОШТА?
+            if (sharedPreferences.contains("${login}_password")) {
+                Toast.makeText(this, "Цей логін вже зайнятий!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (sharedPreferences.contains("email_$email")) {
+                Toast.makeText(this, "Ця пошта вже зареєстрована!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // 2. ЗБЕРЕЖЕННЯ (Кожен юзер має свої унікальні ключі)
             sharedPreferences.edit().apply {
-                putString("name", name)
-                putString("surname", surname)
-                putString("dob", dob)
-                putString("email", email)
-                putString("login", login)
-                putString("password", password)
+                putString("${login}_name", name)
+                putString("${login}_surname", surname)
+                putString("${login}_dob", dob)
+                putString("${login}_email", email)
+                putString("${login}_password", password)
+
+                // Ставимо окрему мітку, що ця пошта тепер зайнята
+                putBoolean("email_$email", true)
                 apply()
             }
 
             Toast.makeText(this, "Реєстрація успішна!", Toast.LENGTH_SHORT).show()
-            finish() // Закриваємо екран реєстрації, повертаємось на вхід
+            finish()
         }
     }
 }

@@ -30,12 +30,19 @@ class LoginActivity : AppCompatActivity() {
             val inputPassword = etPassword.text.toString().trim()
 
             val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            val savedLogin = sharedPreferences.getString("login", "")
-            val savedPassword = sharedPreferences.getString("password", "")
 
-            if (inputLogin == savedLogin && inputPassword == savedPassword && savedLogin!!.isNotEmpty()) {
-                // Вхід успішний
-                sharedPreferences.edit().putBoolean("isAuthorized", true).apply()
+            // Дістаємо пароль, який належить саме цьому логіну
+            val savedPassword = sharedPreferences.getString("${inputLogin}_password", null)
+
+            // Якщо такий логін існує і паролі збігаються
+            if (savedPassword != null && inputPassword == savedPassword) {
+
+                // Вхід успішний: зберігаємо сесію і ТОГО, ХТО УВІЙШОВ
+                sharedPreferences.edit()
+                    .putBoolean("isAuthorized", true)
+                    .putString("current_user", inputLogin)
+                    .apply()
+
                 Toast.makeText(this, "Вхід успішний!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, MenuActivity::class.java))
                 finish()

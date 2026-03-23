@@ -2,7 +2,7 @@ package com.example.finalproject // <--- ОСЬ ЦЬОГО РЯДКА У ТЕБ�
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.finalproject.R
-A
+
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

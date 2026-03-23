@@ -16,11 +16,19 @@ class MenuActivity : AppCompatActivity() {
         val btnLogout = findViewById<Button>(R.id.btnLogout)
 
         // Зчитуємо дані користувача
+        // Дізнаємося, який логін зараз активний
         val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val name = sharedPreferences.getString("name", "Кухар")
-        val surname = sharedPreferences.getString("surname", "")
+        val currentUser = sharedPreferences.getString("current_user", "")
+        val btnGuide = findViewById<Button>(R.id.btnGuide)
 
-        tvWelcome.text = "Привіт, $name $surname!"
+        btnGuide.setOnClickListener {
+            startActivity(Intent(this, GuideActivity::class.java))
+        }
+        // Дістаємо ім'я та прізвище саме цього користувача
+        val name = sharedPreferences.getString("${currentUser}_name", "Кухар")
+        val surname = sharedPreferences.getString("${currentUser}_surname", "")
+
+        tvWelcome?.text = "Привіт, $name $surname!"
 
         // Кнопка ВИЙТИ
         btnLogout.setOnClickListener {
