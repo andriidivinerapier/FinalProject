@@ -28,7 +28,10 @@ class MenuActivity : AppCompatActivity() {
         val btnProfile = findViewById<Button>(R.id.btnProfile)
 
         // 2. Логіка кнопок (їх достатньо налаштувати один раз)
-
+        val btnMyRecipes = findViewById<Button>(R.id.btnMyRecipes)
+        btnMyRecipes.setOnClickListener {
+            startActivity(Intent(this, MyRecipesActivity::class.java))
+        }
         btnGuide.setOnClickListener {
             startActivity(Intent(this, GuideActivity::class.java))
         }

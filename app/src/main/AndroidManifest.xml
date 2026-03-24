@@ -12,16 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject">
         <activity
+            android:name=".MyRecipesActivity"
+            android:exported="false" />
+        <activity
             android:name=".GuideActivity"
             android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity
+            android:name=".GuideActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".RecipeAdapter"
             android:exported="false" />
+        <activity android:name=".MyRecipesActivity" android:exported="false" />
+        <activity android:name=".AddRecipeActivity" android:exported="false" />
         <activity
             android:name=".RecipeItem"
-            android:exported="false" />
-        <activity android:name=".GuideActivity"
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
