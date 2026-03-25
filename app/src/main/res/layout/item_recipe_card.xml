@@ -52,6 +52,14 @@
                     android:paddingVertical="4dp"
                     android:background="@drawable/bg_button"
                     android:layout_alignParentStart="true"/>
+                <TextView
+                    android:id="@+id/tvRecipeAuthor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Автор"
+                    android:textColor="#888888"
+                    android:textSize="12sp" />
+
 
                 <LinearLayout
                     android:layout_width="wrap_content"

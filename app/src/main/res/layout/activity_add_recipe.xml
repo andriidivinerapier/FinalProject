@@ -60,17 +60,30 @@
             android:layout_marginBottom="20dp"/>
 
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:weightSum="3" android:layout_marginBottom="20dp">
+
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="⚡ Складність" android:textColor="@color/white" android:textSize="12sp" android:layout_marginBottom="4dp"/>
-                <Spinner android:id="@+id/spinDifficulty" android:layout_width="match_parent" android:layout_height="45dp" android:background="@drawable/bg_input"/>
+                <Spinner android:id="@+id/spinDifficulty" android:layout_width="match_parent" android:layout_height="45dp" android:background="@drawable/bg_input" android:spinnerMode="dropdown"/>
             </LinearLayout>
+
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginEnd="8dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🕒 Час (хв)" android:textColor="@color/white" android:textSize="12sp" android:layout_marginBottom="4dp"/>
-                <Spinner android:id="@+id/spinTime" android:layout_width="match_parent" android:layout_height="45dp" android:background="@drawable/bg_input"/>
+                <EditText
+                    android:id="@+id/etRecipeTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:background="@drawable/bg_input"
+                    android:inputType="number"
+                    android:textColor="@color/white"
+                    android:gravity="center"
+                    android:hint="30"
+                    android:textColorHint="#444"
+                    android:paddingHorizontal="8dp"/>
             </LinearLayout>
+
             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Категорія" android:textColor="@color/white" android:textSize="12sp" android:layout_marginBottom="4dp"/>
-                <Spinner android:id="@+id/spinCategory" android:layout_width="match_parent" android:layout_height="45dp" android:background="@drawable/bg_input"/>
+                <Spinner android:id="@+id/spinCategory" android:layout_width="match_parent" android:layout_height="45dp" android:background="@drawable/bg_input" android:spinnerMode="dropdown"/>
             </LinearLayout>
         </LinearLayout>
 
