@@ -1,5 +1,7 @@
 package com.example.finalproject
 
+import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.view.LayoutInflater
@@ -36,13 +38,25 @@ class RecipeAdapter(
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val recipe = recipes[position]
 
+
         holder.title.text = recipe.title
         holder.category.text = recipe.category
         holder.time.text = "${recipe.timeMins} хв"
 
         // --- ЛОГІКА КЕРУВАННЯ ---
+        // Показуємо кнопки тільки на екрані "Мої рецепти"
         holder.controlButtons.visibility = if (isMyRecipesScreen) View.VISIBLE else View.GONE
+
         holder.btnDelete.setOnClickListener { onDeleteClick(recipe) }
+
+        holder.btnEdit.setOnClickListener {
+            // Тут можна додати логіку відкриття AddRecipeActivity для редагування
+        }
+        holder.btnEdit.setOnClickListener {
+            val intent = Intent(holder.itemView.context, AddRecipeActivity::class.java)
+            intent.putExtra("edit_recipe", recipe) // Передаємо весь об'єкт
+            holder.itemView.context.startActivity(intent)
+        }
 
         // --- ЛОГІКА ДЛЯ АВТОРА ---
         val authorName = recipe.author ?: ""
@@ -58,15 +72,16 @@ class RecipeAdapter(
             holder.author.setTextColor(Color.WHITE)
         }
 
-        // --- ЛОГІКА ДЛЯ ФОТО (ВИПРАВЛЕНО) ---
+        // --- ЛОГІКА ДЛЯ ФОТО (НАЙНАДІЙНІША) ---
         if (!recipe.imagePath.isNullOrEmpty()) {
             try {
                 val imgFile = File(recipe.imagePath!!)
                 if (imgFile.exists()) {
-                    // Якщо це шлях до файлу (внутрішня пам'ять)
-                    holder.image.setImageURI(Uri.fromFile(imgFile))
+                    // Використовуємо BitmapFactory, це працює швидше і без помилок доступу
+                    val bitmap = BitmapFactory.decodeFile(imgFile.absolutePath)
+                    holder.image.setImageBitmap(bitmap)
                 } else {
-                    // Якщо файл не знайдено, спробуємо розпарсити як звичайний Uri (для DummyData)
+                    // Для DummyData або якщо файл не знайдено за шляхом
                     holder.image.setImageURI(Uri.parse(recipe.imagePath))
                 }
             } catch (e: Exception) {
