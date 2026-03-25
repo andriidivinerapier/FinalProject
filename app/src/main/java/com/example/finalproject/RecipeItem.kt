@@ -1,10 +1,13 @@
 package com.example.finalproject
+import java.io.Serializable
 
-// Проста структура для зберігання даних рецепту
 data class RecipeItem(
-    val id: Int,
+    val id: Long, // <--- ЗМІНИ ТУТ НА Long
     val title: String,
     val category: String,
-    val timeMins: Int
-    // У реальному проекті тут було б посилання на фото (URL або Drawable ID)
-)
+    val timeMins: Int,
+    val author: String = "Система",
+    val imagePath: String? = null,
+    val ingredients: String = "",
+    val instructions: String = ""
+) : Serializable

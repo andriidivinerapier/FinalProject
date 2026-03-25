@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,8 @@ class MyRecipesActivity : AppCompatActivity() {
 
     private lateinit var rvRecipes: RecyclerView
     private lateinit var tvEmpty: TextView
-    private var myRecipesList = mutableListOf<Recipe>()
+    private lateinit var adapter: RecipeAdapter
+    private var myRecipesList = mutableListOf<RecipeItem>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,10 +29,8 @@ class MyRecipesActivity : AppCompatActivity() {
         rvRecipes = findViewById(R.id.rvMyRecipes)
         tvEmpty = findViewById(R.id.tvEmptyMessage)
 
-        // 1. Кнопка НАЗАД
         btnBack.setOnClickListener { finish() }
 
-        // 2. Кнопка ДОДАТИ (перехід на AddRecipeActivity)
         btnAdd.setOnClickListener {
             val intent = Intent(this, AddRecipeActivity::class.java)
             startActivity(intent)
@@ -41,37 +41,95 @@ class MyRecipesActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        loadRecipes() // Щоразу оновлюємо список, коли повертаємось на цей екран
+        loadRecipes()
     }
 
     private fun setupRecyclerView() {
         rvRecipes.layoutManager = LinearLayoutManager(this)
-        // Тут ми підключимо адаптер, як тільки він буде готовий
+
+        // ЗМІНА: Передаємо 'true', щоб адаптер показав іконки смітника та редагування
+        adapter = RecipeAdapter(myRecipesList, true) { recipeToDelete ->
+            deleteRecipe(recipeToDelete)
+        }
+        rvRecipes.adapter = adapter
     }
 
     private fun loadRecipes() {
         val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val currentUser = sharedPrefs.getString("current_user", "") ?: ""
-
-        // Дістаємо збережений рядок рецептів (ми будемо зберігати їх як JSON)
         val recipesJson = sharedPrefs.getString("${currentUser}_my_recipes", null)
 
+        myRecipesList.clear()
         if (recipesJson != null) {
-            val type = object : TypeToken<List<Recipe>>() {}.type
-            val loadedList: List<Recipe> = Gson().fromJson(recipesJson, type)
-
-            myRecipesList.clear()
+            val type = object : TypeToken<MutableList<RecipeItem>>() {}.type
+            val loadedList: MutableList<RecipeItem> = Gson().fromJson(recipesJson, type)
             myRecipesList.addAll(loadedList)
         }
 
-        // Керуємо видимістю тексту "Порожньо"
+        updateUI()
+    }
+
+    private fun updateUI() {
         if (myRecipesList.isEmpty()) {
             tvEmpty.visibility = View.VISIBLE
             rvRecipes.visibility = View.GONE
         } else {
             tvEmpty.visibility = View.GONE
             rvRecipes.visibility = View.VISIBLE
-            // Тут буде оновлення адаптера: adapter.notifyDataSetChanged()
         }
+        adapter.notifyDataSetChanged()
+    }
+
+    // ЗМІНА: Логіка видалення з обох списків (свого та загального)
+    private fun deleteRecipe(recipe: RecipeItem) {
+        // Створюємо діалогове вікно
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Видалення рецепта")
+        builder.setMessage("Ви впевнені, що хочете видалити '${recipe.title}'? Його неможливо буде відновити.")
+
+        // Кнопка підтвердження
+        builder.setPositiveButton("Видалити") { dialog, _ ->
+            performFullDeletion(recipe) // Викликаємо саму логіку видалення
+            dialog.dismiss()
+        }
+
+        // Кнопка відміни
+        builder.setNegativeButton("Скасувати") { dialog, _ ->
+            dialog.dismiss() // Просто закриваємо вікно без дій
+        }
+
+        // Робимо діалог стильнішим (червона кнопка видалення)
+        val alertDialog = builder.create()
+        alertDialog.show()
+
+        // Опціонально: змінюємо колір кнопки видалення на червоний після показу
+        alertDialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
+            .setTextColor(android.graphics.Color.parseColor("#FF5252"))
+    }
+
+    // Виносимо логіку видалення в окремий метод для чистоти коду
+    private fun performFullDeletion(recipe: RecipeItem) {
+        val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val currentUser = sharedPrefs.getString("current_user", "") ?: ""
+        val gson = Gson()
+        val type = object : TypeToken<MutableList<RecipeItem>>() {}.type
+
+        // 1. Видаляємо з локального списку
+        myRecipesList.remove(recipe)
+
+        // 2. Оновлюємо "Мої рецепти"
+        sharedPrefs.edit().putString("${currentUser}_my_recipes", gson.toJson(myRecipesList))
+            .apply()
+
+        // 3. Видаляємо з "Загального довідника"
+        val globalJson = sharedPrefs.getString("global_recipes", null)
+        if (globalJson != null) {
+            val globalList: MutableList<RecipeItem> = gson.fromJson(globalJson, type)
+            globalList.removeAll { it.id == recipe.id }
+            sharedPrefs.edit().putString("global_recipes", gson.toJson(globalList)).apply()
+        }
+
+        Toast.makeText(this, "Рецепт видалено 🗑️", Toast.LENGTH_SHORT).show()
+        updateUI()
     }
 }

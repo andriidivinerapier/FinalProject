@@ -51,37 +51,71 @@
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="4dp"
                     android:background="@drawable/bg_button"
-                    android:layout_alignParentStart="true"/>
-                <TextView
-                    android:id="@+id/tvRecipeAuthor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Автор"
-                    android:textColor="#888888"
-                    android:textSize="12sp" />
-
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:gravity="end"
                     android:layout_alignParentEnd="true">
 
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_time"
-                        android:layout_marginEnd="6dp"
-                        app:tint="@color/text_hint"/>
-
-                    <TextView
-                        android:id="@+id/tvRecipeTime"
+                    <LinearLayout
+                        android:id="@+id/llControlButtons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="25 хв"
-                        android:textColor="@color/text_hint"
-                        android:textSize="14sp"/>
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:visibility="gone">
+
+                        <ImageView
+                            android:id="@+id/btnEditRecipe"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_edit"
+                            android:layout_marginEnd="16dp"
+                            app:tint="@color/white"/>
+
+                        <ImageView
+                            android:id="@+id/btnDeleteRecipe"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_delete"
+                            app:tint="#FF5252"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvRecipeAuthor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Автор"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="2dp"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="14dp"
+                            android:layout_height="14dp"
+                            android:src="@drawable/ic_time"
+                            android:layout_marginEnd="4dp"
+                            app:tint="@color/text_hint"/>
+
+                        <TextView
+                            android:id="@+id/tvRecipeTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="25 хв"
+                            android:textColor="@color/text_hint"
+                            android:textSize="13sp"/>
+                    </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
