@@ -19,9 +19,7 @@ import java.io.InputStream
 
 class AddRecipeActivity : AppCompatActivity() {
 
-    // Змінна для зберігання ID рецепта, який ми редагуємо
     private var editingRecipeId: Long? = null
-    // Шлях до існуючого фото (якщо ми в режимі редагування)
     private var currentImagePath: String? = null
 
     private val difficulties = arrayOf("Легка", "Середня", "Важка")
@@ -55,7 +53,6 @@ class AddRecipeActivity : AppCompatActivity() {
         val btnClose = findViewById<ImageButton>(R.id.btnClose)
         tvFileName = findViewById(R.id.tvFileName)
 
-        // Налаштування Spinner-ів
         val adapterParams = ArrayAdapter(this, R.layout.item_spinner, difficulties)
         adapterParams.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinDifficulty.adapter = adapterParams
@@ -64,36 +61,32 @@ class AddRecipeActivity : AppCompatActivity() {
         adapterCat.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinCategory.adapter = adapterCat
 
-        // --- ПЕРЕВІРКА НА РЕЖИМ РЕДАГУВАННЯ ---
         val recipeToEdit = intent.getSerializableExtra("edit_recipe") as? RecipeItem
         if (recipeToEdit != null) {
             editingRecipeId = recipeToEdit.id
             currentImagePath = recipeToEdit.imagePath
-
             etTitle.setText(recipeToEdit.title)
             etTime.setText(recipeToEdit.timeMins.toString())
 
+            // Встановлюємо категорію
             val catIndex = categories.indexOf(recipeToEdit.category)
             if (catIndex >= 0) spinCategory.setSelection(catIndex)
 
-            // Очищуємо порожні поля за замовчуванням перед заповненням
+            // --- НОВА ЗМІНА: Встановлюємо складність при редагуванні ---
+            val diffIndex = difficulties.indexOf(recipeToEdit.difficulty)
+            if (diffIndex >= 0) spinDifficulty.setSelection(diffIndex)
+
             containerIngredients.removeAllViews()
             containerSteps.removeAllViews()
-
-            // Заповнюємо інгредієнти
             recipeToEdit.ingredients.split("\n").filter { it.isNotBlank() }.forEach {
                 addDynamicField(containerIngredients, "Інгредієнт...", false, it)
             }
-
-            // Заповнюємо кроки
             recipeToEdit.instructions.split("\n").filter { it.isNotBlank() }.forEach {
                 addDynamicField(containerSteps, "Опишіть крок...", true, it)
             }
-
             tvFileName.text = "Фото вже є (можна змінити) 📷"
             btnPublish.text = "Зберегти зміни"
         } else {
-            // Якщо це новий рецепт, додаємо по одному порожньому полю
             addDynamicField(containerIngredients, "Інгредієнт (напр. Цукор - 100г)")
             addDynamicField(containerSteps, "Опишіть крок приготування...", true)
         }
@@ -118,7 +111,9 @@ class AddRecipeActivity : AppCompatActivity() {
             val timeStr = etTime.text.toString().trim()
             val category = spinCategory.selectedItem.toString()
 
-            // ПЕРЕВІРКА ФОТО: Якщо це новий рецепт, фото обов'язкове. Якщо редагування — можна лишити старе.
+            // --- НОВА ЗМІНА: Отримуємо складність зі Spinner ---
+            val difficulty = spinDifficulty.selectedItem.toString()
+
             if (selectedImageUri == null && currentImagePath == null) {
                 Toast.makeText(this, "Будь ласка, додайте фото страви! 📸", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -132,7 +127,18 @@ class AddRecipeActivity : AppCompatActivity() {
             val ingredients = collectData(containerIngredients)
             val steps = collectData(containerSteps)
 
-            saveRecipe(title, timeStr.toInt(), category, ingredients, steps)
+            if (ingredients.isEmpty()) {
+                Toast.makeText(this, "Додайте хоча б один інгредієнт!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (steps.isEmpty()) {
+                Toast.makeText(this, "Опишіть хоча б один крок приготування!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // ПЕРЕДАЄМО СКЛАДНІСТЬ У saveRecipe
+            saveRecipe(title, timeStr.toInt(), category, difficulty, ingredients, steps)
         }
     }
 
@@ -153,29 +159,32 @@ class AddRecipeActivity : AppCompatActivity() {
     private fun collectData(container: LinearLayout): String {
         val list = mutableListOf<String>()
         for (i in 0 until container.childCount) {
-            val et = container.getChildAt(i).findViewById<EditText>(R.id.etDynamicInput)
-            if (et.text.isNotEmpty()) list.add(et.text.toString())
+            val view = container.getChildAt(i)
+            val et = view.findViewById<EditText>(R.id.etDynamicInput)
+            val text = et.text.toString().trim()
+            if (text.isNotEmpty()) list.add(text)
         }
         return list.joinToString("\n")
     }
 
-    private fun saveRecipe(title: String, time: Int, category: String, ingredients: String, steps: String) {
+    private fun saveRecipe(title: String, time: Int, category: String, difficulty: String, ingredients: String, steps: String) {
         val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val currentUser = sharedPrefs.getString("current_user", "") ?: ""
         val authorName = sharedPrefs.getString("${currentUser}_name", currentUser) ?: currentUser
 
-        // Якщо вибрали нове фото — копіюємо, інакше лишаємо старий шлях
         val finalImagePath = if (selectedImageUri != null) {
             copyImageToInternalStorage(selectedImageUri!!)
         } else {
             currentImagePath
         }
 
+        // --- НОВА ЗМІНА: Передаємо difficulty в конструктор RecipeItem ---
         val newRecipe = RecipeItem(
             id = editingRecipeId ?: System.currentTimeMillis(),
             title = title,
             category = category,
             timeMins = time,
+            difficulty = difficulty,
             author = authorName,
             imagePath = finalImagePath,
             ingredients = ingredients,
@@ -185,22 +194,14 @@ class AddRecipeActivity : AppCompatActivity() {
         val gson = Gson()
         val type = object : TypeToken<MutableList<RecipeItem>>() {}.type
 
-        // 1. Оновлюємо "Мої рецепти"
         val myJson = sharedPrefs.getString("${currentUser}_my_recipes", null)
-        val myList: MutableList<RecipeItem> = if (myJson != null) {
-            gson.fromJson(myJson, type)
-        } else mutableListOf()
-
+        val myList: MutableList<RecipeItem> = if (myJson != null) gson.fromJson(myJson, type) else mutableListOf()
         if (editingRecipeId != null) myList.removeAll { it.id == editingRecipeId }
         myList.add(newRecipe)
         sharedPrefs.edit().putString("${currentUser}_my_recipes", gson.toJson(myList)).apply()
 
-        // 2. Оновлюємо "Загальний довідника"
         val globalJson = sharedPrefs.getString("global_recipes", null)
-        val globalList: MutableList<RecipeItem> = if (globalJson != null) {
-            gson.fromJson(globalJson, type)
-        } else mutableListOf()
-
+        val globalList: MutableList<RecipeItem> = if (globalJson != null) gson.fromJson(globalJson, type) else mutableListOf()
         if (editingRecipeId != null) globalList.removeAll { it.id == editingRecipeId }
         globalList.add(newRecipe)
         sharedPrefs.edit().putString("global_recipes", gson.toJson(globalList)).apply()

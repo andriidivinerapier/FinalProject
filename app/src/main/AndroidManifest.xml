@@ -11,47 +11,52 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FinalProject">
-        <activity
-            android:name=".MyRecipesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GuideActivity"
-            android:exported="false" />
-        <activity
-            android:name=".GuideActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RecipeAdapter"
-            android:exported="false" />
-        <activity android:name=".MyRecipesActivity" android:exported="false" />
-        <activity android:name=".AddRecipeActivity" android:exported="false" />
-        <activity
-            android:name=".RecipeItem"
-            android:exported="false" />
+
         <activity
             android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".RecipeItemActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".MyRecipesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".GuideActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AddRecipeActivity"
+            android:exported="false" />
+
         <activity
             android:name=".MenuActivity"
             android:exported="false" />
+
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
+
         <activity
             android:name=".LoginActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>

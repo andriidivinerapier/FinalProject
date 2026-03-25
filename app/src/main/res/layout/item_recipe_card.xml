@@ -39,7 +39,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
 
                 <TextView
                     android:id="@+id/tvRecipeCategory"
@@ -118,6 +119,18 @@
                     </LinearLayout>
                 </LinearLayout>
             </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnOpenFullRecipe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Рецепт"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:background="@drawable/bg_button"
+                android:textStyle="bold"
+                app:cornerRadius="8dp" />
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -98,7 +98,7 @@ class GuideActivity : AppCompatActivity() {
     private fun generateDummyData() {
         // Використовуємо addAll, щоб додати до існуючого списку
         allRecipes.addAll(listOf(
-            RecipeItem(1, "Панкейки з бананом", "Сніданок", 20, "Система"),
+            RecipeItem(1, "Панкейки з бананом", "Сніданок", 20, "Середня"),
             RecipeItem(2, "Сирники з ваніллю", "Сніданок", 25, "Система"),
             RecipeItem(4, "Бургер По-Багатому", "Обід", 15, "Система"),
             RecipeItem(13, "Яблучний Штрудель", "Десерти", 60, "Система")
