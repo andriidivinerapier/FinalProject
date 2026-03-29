@@ -1,25 +1,37 @@
 package com.example.finalproject
+
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 
 class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Перевіряємо сесію
-        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val isAuthorized = sharedPreferences.getBoolean("isAuthorized", false)
+        // ПІДКЛЮЧАЄМО МАКЕТ З ЛОГОТИПОМ
+        setContentView(R.layout.activity_splash)
 
-        // Куди йдемо далі?
-        if (isAuthorized) {
-            startActivity(Intent(this, MenuActivity::class.java))
-        } else {
-            startActivity(Intent(this, LoginActivity::class.java))
-        }
+        // ВСТАНОВЛЮЄМО ЗАТРИМКУ 2 СЕКУНДИ (2000 мс)
+        Handler(Looper.getMainLooper()).postDelayed({
 
-        // Закриваємо Splash, щоб він не висів у фоні
-        finish()
+            // ПЕРЕВІРЯЄМО СЕСІЮ (чи залогінений юзер)
+            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val isAuthorized = sharedPreferences.getBoolean("isAuthorized", false)
+
+            // ВИЗНАЧАЄМО НАСТУПНИЙ ЕКРАН
+            val intent = if (isAuthorized) {
+                Intent(this, MenuActivity::class.java)
+            } else {
+                Intent(this, LoginActivity::class.java)
+            }
+
+            // ПЕРЕХОДИМО ТА ЗАКРИВАЄМО SPLASH
+            startActivity(intent)
+            finish()
+
+        }, 2000) // Рівно 2 секунди заставки
     }
 }
