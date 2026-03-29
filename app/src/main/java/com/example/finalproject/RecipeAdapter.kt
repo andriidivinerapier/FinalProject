@@ -47,12 +47,10 @@ class RecipeAdapter(
         holder.category.text = recipe.category
         holder.time.text = "${recipe.timeMins} хв"
 
-        // --- НОВА ЛОГІКА: ВІДКРИТТЯ МОДАЛЬНОГО ВІКНА ---
         holder.btnOpenRecipe.setOnClickListener {
             showRecipeDetails(holder.itemView.context, recipe)
         }
 
-        // --- ЛОГІКА КЕРУВАННЯ (ДЛЯ МОЇХ РЕЦЕПТІВ) ---
         if (isMyRecipesScreen) {
             holder.controlButtons.visibility = View.VISIBLE
             holder.btnDelete.setOnClickListener { onDeleteClick(recipe) }
@@ -65,7 +63,6 @@ class RecipeAdapter(
             holder.controlButtons.visibility = View.GONE
         }
 
-        // --- ЛОГІКА ДЛЯ АВТОРА ---
         val authorName = recipe.author ?: ""
         if (authorName.equals("Система", ignoreCase = true) || authorName.isEmpty()) {
             holder.author.visibility = View.GONE
@@ -75,11 +72,9 @@ class RecipeAdapter(
             holder.author.setTextColor(Color.WHITE)
         }
 
-        // --- ЛОГІКА ДЛЯ ФОТО ---
         renderImage(recipe.imagePath, holder.image)
     }
 
-    // МЕТОД ДЛЯ СТВОРЕННЯ МОДАЛЬНОГО ВІКНА (BOTTOM SHEET)
     private fun showRecipeDetails(context: Context, recipe: RecipeItem) {
         val dialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(context).inflate(R.layout.layout_recipe_details, null)
@@ -92,13 +87,10 @@ class RecipeAdapter(
         val tvDetailSteps = view.findViewById<TextView>(R.id.tvDetailSteps)
         val btnClose = view.findViewById<ImageButton>(R.id.btnClose)
 
-        // ЗАПОВНЕННЯ ДАНИХ
         tvDetailTitle.text = recipe.title
         tvDetailTime.text = "${recipe.timeMins} хв"
-
-        // Встановлюємо текст і колір (щоб точно було видно)
         tvDetailDifficulty.text = recipe.difficulty
-        tvDetailDifficulty.setTextColor(Color.WHITE) // Явно робимо білим
+        tvDetailDifficulty.setTextColor(Color.WHITE)
 
         tvDetailIngredients.text = recipe.ingredients.split("\n")
             .filter { it.isNotBlank() }
@@ -112,20 +104,25 @@ class RecipeAdapter(
         renderImage(recipe.imagePath, ivDetailImage)
 
         btnClose.setOnClickListener { dialog.dismiss() }
-
         dialog.setContentView(view)
         dialog.show()
     }
 
-    // Допоміжна функція для обробки зображень
+    // --- ВИПРАВЛЕНА ФУНКЦІЯ ДЛЯ ВІДОБРАЖЕННЯ ФОТО ---
     private fun renderImage(path: String?, imageView: ImageView) {
         if (!path.isNullOrEmpty()) {
             try {
-                val imgFile = File(path)
-                if (imgFile.exists()) {
-                    imageView.setImageBitmap(BitmapFactory.decodeFile(imgFile.absolutePath))
-                } else {
+                if (path.startsWith("android.resource://")) {
+                    // Якщо фото з нашого списку 10 рецептів
                     imageView.setImageURI(Uri.parse(path))
+                } else {
+                    // Якщо фото додав користувач через додаток
+                    val imgFile = File(path)
+                    if (imgFile.exists()) {
+                        imageView.setImageBitmap(BitmapFactory.decodeFile(imgFile.absolutePath))
+                    } else {
+                        imageView.setImageResource(R.drawable.ic_launcher_foreground)
+                    }
                 }
             } catch (e: Exception) {
                 imageView.setImageResource(R.drawable.ic_launcher_foreground)

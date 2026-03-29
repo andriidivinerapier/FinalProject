@@ -12,7 +12,6 @@ import java.io.File
 
 class MenuActivity : AppCompatActivity() {
 
-    // Виносимо ці змінні вгору, щоб метод onResume теж міг їх бачити
     private lateinit var tvWelcome: TextView
     private lateinit var ivAvatar: ImageView
 
@@ -20,18 +19,17 @@ class MenuActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_menu)
 
-        // 1. Знаходимо всі в'юшки
         tvWelcome = findViewById(R.id.tvWelcome)
         ivAvatar = findViewById(R.id.ivMenuAvatar)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
         val btnGuide = findViewById<Button>(R.id.btnGuide)
         val btnProfile = findViewById<Button>(R.id.btnProfile)
-
-        // 2. Логіка кнопок (їх достатньо налаштувати один раз)
         val btnMyRecipes = findViewById<Button>(R.id.btnMyRecipes)
+
         btnMyRecipes.setOnClickListener {
             startActivity(Intent(this, MyRecipesActivity::class.java))
         }
+
         btnGuide.setOnClickListener {
             startActivity(Intent(this, GuideActivity::class.java))
         }
@@ -50,7 +48,6 @@ class MenuActivity : AppCompatActivity() {
         }
     }
 
-    // 3. МАГІЧНИЙ МЕТОД: спрацьовує щоразу, коли повертаєшся на цей екран
     override fun onResume() {
         super.onResume()
         refreshUserData()
@@ -65,22 +62,31 @@ class MenuActivity : AppCompatActivity() {
             val surname = sharedPreferences.getString("${currentUser}_surname", "")
             val avatarPath = sharedPreferences.getString("${currentUser}_avatar_path", null)
 
-            // Оновлюємо текст привітання
             tvWelcome.text = "Привіт, $name $surname!"
 
-            // Оновлюємо фото (якщо воно є)
+            // --- ЗМІНИ ТУТ ---
             if (avatarPath != null) {
                 val file = File(avatarPath)
                 if (file.exists()) {
                     val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                     ivAvatar.setImageBitmap(bitmap)
                     ivAvatar.setPadding(0, 0, 0, 0)
+                } else {
+                    // Якщо шлях є, але файл видалено — ставимо логотип
+                    setDefaultAvatar()
                 }
             } else {
-                // Якщо фото немає (наприклад, новий юзер), ставимо стандартну іконку
-                ivAvatar.setImageResource(R.drawable.ic_launcher_foreground)
-                ivAvatar.setPadding(10, 10, 10, 10)
+                // Якщо користувач новий і ще не вибрав фото — ставимо логотип сайту
+                setDefaultAvatar()
             }
         }
+    }
+
+    // Допоміжний метод для встановлення логотипа за замовчуванням
+    private fun setDefaultAvatar() {
+        // Використовуємо основний логотип додатка
+        ivAvatar.setImageResource(R.drawable.my_logo)
+        // Прибираємо внутрішні відступи, щоб лого було на весь розмір контейнера
+        ivAvatar.setPadding(0, 0, 0, 0)
     }
 }

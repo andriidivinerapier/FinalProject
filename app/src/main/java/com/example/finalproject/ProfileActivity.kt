@@ -40,6 +40,7 @@ class ProfileActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             galleryUri = result.data?.data
             ivAvatar.setImageURI(galleryUri)
+            ivAvatar.setPadding(0, 0, 0, 0) // Прибираємо відступи при виборі фото
             cameraBitmap = null
         }
     }
@@ -49,6 +50,7 @@ class ProfileActivity : AppCompatActivity() {
             val bitmap = result.data?.extras?.get("data") as? Bitmap
             bitmap?.let {
                 ivAvatar.setImageBitmap(it)
+                ivAvatar.setPadding(0, 0, 0, 0) // Прибираємо відступи
                 cameraBitmap = it
                 galleryUri = null
             }
@@ -59,7 +61,6 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
-        // Ініціалізація всіх View (ID мають збігатися з твоїм XML)
         val btnBack = findViewById<ImageView>(R.id.btnBackProfile)
         val btnChangeAvatar = findViewById<androidx.cardview.widget.CardView>(R.id.btnChangeAvatar)
         val btnSave = findViewById<Button>(R.id.btnSaveProfile)
@@ -93,7 +94,6 @@ class ProfileActivity : AppCompatActivity() {
             val dob = sharedPrefs.getString("${currentUser}_dob", "") ?: ""
             val avatarPath = sharedPrefs.getString("${currentUser}_avatar_path", null)
 
-            // Заповнюємо поля
             etName.setText(name)
             etSurname.setText(surname)
             etEmail.setText(email)
@@ -101,13 +101,25 @@ class ProfileActivity : AppCompatActivity() {
             tvLogin.text = currentUser
             tvFullName.text = if (name.isEmpty() && surname.isEmpty()) "Ваш профіль" else "$name $surname"
 
-            avatarPath?.let {
-                val file = File(it)
+            // --- ЗМІНИ ТУТ: ЛОГІКА АВАТАРА ЗА ЗАМОВЧУВАННЯМ ---
+            if (avatarPath != null) {
+                val file = File(avatarPath)
                 if (file.exists()) {
                     ivAvatar.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                    ivAvatar.setPadding(0, 0, 0, 0)
+                } else {
+                    setDefaultLogo()
                 }
+            } else {
+                setDefaultLogo()
             }
         }
+    }
+
+    // Допоміжна функція для встановлення логотипа
+    private fun setDefaultLogo() {
+        ivAvatar.setImageResource(R.drawable.my_logo)
+        ivAvatar.setPadding(0, 0, 0, 0) // Щоб логотип був чітким і без зайвих рамок
     }
 
     private fun saveChanges() {
@@ -123,7 +135,6 @@ class ProfileActivity : AppCompatActivity() {
 
         val sharedPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
 
-        // ЗБЕРІГАЄМО ВСЕ
         sharedPrefs.edit().apply {
             putString("${currentUser}_name", newName)
             putString("${currentUser}_surname", newSurname)
@@ -132,18 +143,14 @@ class ProfileActivity : AppCompatActivity() {
             apply()
         }
 
-        // Зберігаємо фото, якщо міняли
         when {
             cameraBitmap != null -> saveBitmapToStorage(cameraBitmap!!)
             galleryUri != null -> saveUriToStorage(galleryUri!!)
         }
 
         Toast.makeText(this, "Дані успішно оновлено!", Toast.LENGTH_SHORT).show()
-
-        // Оновлюємо заголовок відразу
         tvFullName.text = "$newName $newSurname"
-
-        finish() // Повертаємося назад
+        finish()
     }
 
     private fun showDatePicker() {
